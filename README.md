@@ -2,6 +2,8 @@
 
 为任意项目一键初始化 AI 代理开发规范体系。从 [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) 中提炼的成熟模式，参数化为可复用模板。
 
+> [GitHub 仓库](https://github.com/CeejayChen/agent-spec-init)
+
 ## 安装
 
 ### 方式一：npx 直接运行（推荐）
@@ -9,13 +11,13 @@
 无需安装，一行命令直接从 GitHub 运行：
 
 ```sh
-npx github:yourname/agent-spec-init
+npx github:CeejayChen/agent-spec-init
 ```
 
 ### 方式二：全局安装
 
 ```sh
-npm install -g github:yourname/agent-spec-init
+npm install -g github:CeejayChen/agent-spec-init
 ```
 
 安装后直接使用：
@@ -29,13 +31,13 @@ agent-spec-init
 在目标项目目录下运行，交互式引导完成配置，生成完整的规范文件体系：
 
 ```sh
-npx github:yourname/agent-spec-init
+npx github:CeejayChen/agent-spec-init
 ```
 
 ### 非交互模式
 
 ```sh
-npx github:yourname/agent-spec-init -y --name my-project --pm npm --lang en
+npx github:CeejayChen/agent-spec-init -y --name my-project --pm npm --lang en
 ```
 
 ## 生成内容
@@ -119,7 +121,7 @@ npm run lint            # 类型检查
 
 ## 项目由来
 
-本工具从 `deepseek-harness` 项目中已建立的自研代理规范系统提取并产品化。`deepseek-harness` 中的分层 AGENTS.md 指令体系、Agent Notes 决策记录、复用性 Skills 和机器可验证门禁，被转化为可通过 `npx github:yourname/agent-spec-init` 一键初始化的脚手架工具。
+本工具从 `deepseek-harness` 项目中已建立的自研代理规范系统提取并产品化。`deepseek-harness` 中的分层 AGENTS.md 指令体系、Agent Notes 决策记录、复用性 Skills 和机器可验证门禁，被转化为可通过 `npx github:CeejayChen/agent-spec-init` 一键初始化的脚手架工具。
 
 ## 许可
 
