@@ -1,6 +1,6 @@
 {
   "name": "agent-spec-init",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Initialize an AI agent development specification system in any project — layered AGENTS.md, Agent Notes RFC/ADR, Skills, and machine-checkable verify gates.",
   "type": "module",
   "bin": {
@@ -10,8 +10,12 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc && node scripts/copy-templates.mjs",
+    "prepare": "npm run build",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",

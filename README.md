@@ -77,29 +77,29 @@ scripts/
 
 ## CLI 选项
 
-| 选项 | 说明 | 默认值 |
-|---|---|---|
-| `--name <name>` | 项目名称 | 交互提示 |
-| `--lang <en\|bilingual>` | 语言支持 | 交互提示 |
-| `--pm <npm\|pnpm\|yarn>` | 包管理器 | 自动检测 |
-| `--skip-install` | 跳过依赖安装 | false |
-| `--no-gates` | 跳过验证门禁脚本生成 | false |
-| `--force` | 覆盖已有文件 | false |
-| `-y, --yes` | 接受所有默认值，跳过交互 | false |
+| 选项                     | 说明                     | 默认值   |
+| ------------------------ | ------------------------ | -------- |
+| `--name <name>`          | 项目名称                 | 交互提示 |
+| `--lang <en\|bilingual>` | 语言支持                 | 交互提示 |
+| `--pm <npm\|pnpm\|yarn>` | 包管理器                 | 自动检测 |
+| `--skip-install`         | 跳过依赖安装             | false    |
+| `--no-gates`             | 跳过验证门禁脚本生成     | false    |
+| `--force`                | 覆盖已有文件             | false    |
+| `-y, --yes`              | 接受所有默认值，跳过交互 | false    |
 
 ## 验证门禁
 
 门禁脚本通过 `npm run doc-sync`（完整）或 `npm run test:docs`（轻量）运行：
 
-| 门禁 | 检查内容 |
-|---|---|
-| `verify-agent-note-format` | Agent Note 头部块、Status 行、必需章节 |
-| `verify-agent-note-classification` | 生命周期/分类目录结构合法性 |
-| `verify-md-links` | 相对 Markdown 链接和锚点目标有效 |
-| `verify-md-wrap` | 每段落一个物理行（无硬换行） |
-| `verify-doc-budgets` | 文档字数不超过 manifest 上限 |
-| `verify-export-jsdoc` | 每个导出的 TS 声明都有 JSDoc |
-| `verify-translation-pairing` | 翻译三元组配对完整性与 blob hash 同步 |
+| 门禁                               | 检查内容                               |
+| ---------------------------------- | -------------------------------------- |
+| `verify-agent-note-format`         | Agent Note 头部块、Status 行、必需章节 |
+| `verify-agent-note-classification` | 生命周期/分类目录结构合法性            |
+| `verify-md-links`                  | 相对 Markdown 链接和锚点目标有效       |
+| `verify-md-wrap`                   | 每段落一个物理行（无硬换行）           |
+| `verify-doc-budgets`               | 文档字数不超过 manifest 上限           |
+| `verify-export-jsdoc`              | 每个导出的 TS 声明都有 JSDoc           |
+| `verify-translation-pairing`       | 翻译三元组配对完整性与 blob hash 同步  |
 
 ## 开发
 

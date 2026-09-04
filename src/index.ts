@@ -40,7 +40,7 @@ program
     "reusable Skills, and machine-checkable verification gates.\n\n" +
     "Inspired by the proven patterns from deepseek-harness."
   )
-  .version("0.1.0")
+  .version("0.1.1")
   .option("--name <name>", "Project name")
   .option("--lang <en|bilingual>", "Language support (en or bilingual)")
   .option("--pm <npm|pnpm|yarn>", "Package manager")
