@@ -14,7 +14,7 @@ Each fact has one home: the tier whose job it is; elsewhere, link there.
 
 | Tier | Job | Does NOT belong there |
 |---|---|---|
-| Root `AGENTS.md` | Standing orders: rules an agent needs in context in every session, one to three lines each, linking its home | Stories, worked examples, situational procedures, anything restated from a linked home |
+| Root `AGENTS.md` | Standing orders: rules an agent needs in context in every session | Stories, worked examples, situational procedures, restated detail |
 | Subtree `AGENTS.md` | Orders specific to that subtree | Repo-wide rules the root file already carries |
 | `architecture.md` | Ordered map: composition, core packages, extension points | Type definitions, per-package detail, decision rationale, implementation-status annotations |
 | [Agent Notes](../.agents/notes/README.md) | Active decision records: the why, what-was-given-up, and required verification | Migration plans, acceptance-task checklists, fixture walkthroughs, and spec-speak once the decision has shipped |

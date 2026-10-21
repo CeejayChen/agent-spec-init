@@ -1,31 +1,30 @@
 # Testing policy
 
-
-
-How this project tests, tier by tier, and the rules that keep a green suite meaningful. Commands live in root [AGENTS.md](../AGENTS.md); linked Agent Notes carry the rationale.
+How agent-spec-init tests, tier by tier, and the rules that keep a green suite meaningful. Commands live in root [AGENTS.md](../AGENTS.md).
 
 ## Tiers
 
-- **Unit** (`npm run test`): tests stay with the code area they exercise. Prefer edge cases, error paths, event ordering, concurrency races, and permanent tests for contract regressions.
-- **Coverage gate** (`npm run test:coverage`): per-file coverage enforcement. An uncovered line is often dead code the gate flags for deletion, not a missing test to bolt on. Line coverage is necessary, never sufficient — it proves lines ran, not that the feature works as shipped.
-- **Integration / e2e**: tests against real services or composed systems. Each suite self-skips without its configuration so CI stays green for contributors without access.
-
-## How specs execute
-
-Forked workers run several spec files at once. Only the process is isolated: ports, predictable paths, external namespaces, and inherited children are not. Own each acquired resource through its teardown, and read a spec that passes only when it runs alone as a defect in the spec.
+- **Unit** (`npm test`): rendering, detection, planning, and applying run against temporary directories and in-memory facts. They assert file content and outcomes, never console wording.
+- **Integration** (`npm test`, `tests/scaffold.spec.ts`): a real scaffold into a temporary directory, followed by the generated project's own gates run through `tsx` or Python.
+- **Negative controls** (`npm test`): a wrapped paragraph and a malformed Agent Note must turn the matching gate red. A gate that cannot fail has not been shown to work.
+- **Template gate** (`npm run verify-templates`): every stack profile is rendered, checked for leftover placeholders, checked against its own budget manifest, and checked for unused templates.
 
 ## Prefer the real implementation over a mock
 
-Mock only the expensive or non-deterministic boundary (external API, network, clock); keep everything downstream real. A hand-rolled stand-in proves the bridge moves bytes, not that the shipping tool behaves as asserted.
+The integration tests run the generated gate scripts instead of asserting their source text. They spawn the local `tsx` and the installed Python interpreter, so a broken import or a wrong command fails the test.
 
 ## Verify the world, not the self-report
 
-An e2e assertion re-runs the command or re-reads the file externally; a keyword probe on the agent's own output lets a cheating agent pass. Assert untouched files are byte-identical. e2e tests own their resources: create it in the test, dispose in `afterEach`.
+Assertions read files from disk after the run and check process exit codes. No test claims success because a report string said so; the JSON report is tested for shape, and the filesystem is tested separately.
 
 ## Test the real entry path
 
-Product-visible plugins require a non-unit composition test. Hand-built plugin suites are insufficient: boot test-only config through the loader and process, mock only external services or nondeterministic inputs, and assert model-visible, durable, or user-visible output.
+`tests/cli.spec.ts` calls `main` with real argv arrays, including `--dry-run`, `--json`, and an invalid template. A hand-built options object alone would miss flag parsing and exit-code mapping.
 
-## When a snapshot test is required
+## When a snapshot is warranted
 
-Every non-trivial model-, protocol-, or human-visible change adds or updates a recorded-session scenario in the same PR. Expected output that is not driven by a recorded session stays with its owning module under `tests/expected/`.
+This repository records no snapshots. Generated documents are asserted by rendering them and checking the properties that matter: no placeholders, exact trailing newlines, budgets, and resolvable links. A future output format with a stable representation gets an expected-output fixture beside its owner.
+
+## Manual check before handing off
+
+When a change touches docs, confirm one physical line per paragraph, resolvable relative links, and budgets within `scripts/doc-budgets.manifest.json`. When it touches bilingual docs, update the triplet and run `npm run verify-translation-pairing -- --write`.

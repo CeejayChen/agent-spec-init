@@ -1,67 +1,59 @@
 # AGENTS.md
 
-MY COOL PROJECT uses an AI agent development specification system to ensure consistent, high-quality contributions. Read [docs/architecture.md](docs/architecture.md) before changing source code.
+agent-spec-init installs an AI agent development specification system into other repositories. Read [docs/architecture.md](docs/architecture.md) before changing detection, profiles, the planner, or templates.
 
 ## Repository layout
 
 ```
-.agents/       Agent workflows, Notes, and Skills
-docs/          Architecture, development guide, defensive patterns, testing policy
-scripts/       Verification gates and generators
-packages/      Project packages
+src/       CLI, detection, options, planner, profiles, templates
+scripts/   this repository's own verification gates
+docs/      architecture, development guide, testing policy, defensive patterns
+.agents/   Agent Notes and Skills
 ```
 
 ## Commands
 
 ```sh
-npm install            # install dependencies
-npm run typecheck       # TypeScript type checking
-npm run lint            # linting
-npm run test            # unit tests
-npm run doc-sync        # all documentation gates
-npm run test:docs       # quick documentation checks (no build)
+npm install         # install dependencies
+npm run build       # compile src/ and copy templates into dist/
+npm run typecheck   # tsc --noEmit
+npm test            # unit and integration tests
+npm run test:docs   # quick documentation gates
+npm run doc-sync    # every documentation gate
 ```
 
 ## Conventions
 
-- **ESM everywhere.** `"type": "module"` in every package.
-- **Strict TypeScript.** `strict: true` with `noImplicitAny`; every remaining `any` explains why.
-- **Registrations are effects.** Every contribution goes through explicit lifecycle hooks.
-- **Runtime invariants assert owned relationships.** Check authoritative data streams, not method presence or fixed examples.
-- **Switch on discriminant tags.** Closed unions end in `assertNever`.
-- **Model-visible = logged.** Anything that reaches a model request must be reconstructable from the session log.
-- **Plugins, not loop changes.** New behavior goes on documented extension points.
-- **Explicit > implicit at package boundaries.** Defaulting is an explicit resolve step, never a hidden fallback.
-- **No hardcoded tunables.** Deployment-varying choices are validated config fields.
-- **Misconfiguration fails loud** at load or the earliest resolvable point; never silently skip.
-- **Opaque cross-boundary ids are branded**, never bare `string`.
-- **Trust TypeScript at typed same-process boundaries.** Validate at config, wire, file, and process boundaries.
-- **An empty catch names what it swallows** and why nothing else can reach it.
-- **Prefer symmetry for parallel values.** Unexplained asymmetry usually signals a missed extraction.
-- **Tests describe behavior, not correctness.** Change obsolete behavior with its tests.
-- **Non-trivial changes MUST include an Agent Note in the same PR.** Only mechanical/local edits are exempt ([scope](.agents/notes/README.md#when-to-write-one)).
-- **Choose PR history deliberately.** Split independent changes; fix the introducing PR before propagation.
-- **TODO markers:** `FIXME`/`TODO`/`XXX` by urgency.
-- Files end with exactly one trailing newline.
-
-## Defensive patterns
-
-Read [docs/defensive-patterns.md](docs/defensive-patterns.md) before lifecycle, concurrency, subprocess, or teardown work.
+- **The plan is the product.** `buildPlan` produces every file as data; only [src/apply.ts](src/apply.ts) writes to disk. A feature that writes during planning breaks `--dry-run` and the tests.
+- **Templates stay content-only.** Placeholder substitution and stack-specific prose belong to [src/render.ts](src/render.ts) and [src/profiles.ts](src/profiles.ts); a template with logic cannot be reviewed as prose.
+- **Rendering fails loud.** An unknown placeholder or a marker left after rendering is an error, never pass-through text.
+- **Profiles own stack prose.** Commands, conventions, layout, and verification wording are generated from detected facts. Never write a command the target repository does not have.
+- **Detection reports only what the filesystem proves.** Manifests, lockfiles, and workspace files decide the stack; no filename heuristics that a fixture cannot reproduce.
+- **Every gate has a negative control.** A gate added without a test that makes it fail has not been shown to work.
+- **One home per fact.** Standing rules live here, structure in [docs/architecture.md](docs/architecture.md), workflow in [docs/development.md](docs/development.md), and reasoning in Agent Notes.
+- **Explicit over implicit.** Defaults are resolved in [src/options.ts](src/options.ts) in one visible step.
+- **Fail loud.** An invalid flag, a malformed `package.json`, or a missing template stops the run with an actionable message.
+- **Docs move with the code.** A behavior change updates the owning document in the same change.
+- **Tests describe behavior.** Change obsolete behavior with its tests; never delete a failing assertion to make a suite green.
+- **No dead scaffolding.** Delete what nothing calls; `verify-templates` rejects a template no profile uses.
+- **Files end with exactly one trailing newline.** Rendering normalizes text to that shape.
 
 ## Type safety and documentation
 
-Every module and export has concise JSDoc for its non-obvious contract; function-like exports include `@param`/`@returns`. Comments state complete contracts and context, not reasoning transcripts. Write directly: name actors and facts. Use concrete terms — write "response fields" or "JSON validation", not "response shape" or "validation boundary".
-
-Docs accompany every code change: update affected README and JSDoc contracts together.
+Every module and exported function carries JSDoc for its non-obvious contract, including `@param`/`@returns` for exported functions. Comments state actors, conditions, and consequences; they never narrate a reasoning process.
 
 ## Agent Notes
 
-[Agent Notes](.agents/notes/README.md) are durable proposals and decision records that preserve rationale, alternatives, consequences, and required verification. Every non-trivial change MUST add or update at least one Agent Note in the same PR.
+[Agent Notes](.agents/notes/README.md) record the why, the rejected alternatives, and the consequences of every non-trivial change. Add or update one in the same change.
 
-## Run relevant checks locally
+## Documentation is bilingual
 
-Match evidence to the surface: focused behavior tests, doc-sync for docs, and built smokes for published paths. Never default to the full suite. CI owns exhaustive coverage; rehearse all locally only by explicit request.
+Documents under `docs/` that carry a `.zh.md` companion also carry an `.i18n.yaml` sidecar recording both blob hashes. After editing either language, run `npx tsx scripts/verify-translation-pairing.ts --write <english-file>` and commit the triplet together. Notes follow the same pattern where a pair exists.
+
+## Verification
+
+Match evidence to the surface: `npm test` for code, `npm run test:docs` while editing prose, and `npm run doc-sync` before handing off. CI runs the exhaustive matrix; do not repeat a passing check for the same commit.
 
 ## Editing these instructions
 
-Edit this file directly. Keep each rule self-contained while linking high-level docs. Condense when clarity survives.
+Edit this file directly. Keep each rule self-contained and link the document that owns the detail. Condense when clarity survives.

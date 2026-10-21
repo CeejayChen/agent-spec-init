@@ -1,10 +1,10 @@
 {
   "name": "agent-spec-init",
-  "version": "0.1.1",
-  "description": "Initialize an AI agent development specification system in any project — layered AGENTS.md, Agent Notes RFC/ADR, Skills, and machine-checkable verify gates.",
+  "version": "0.2.0",
+  "description": "Add an AI agent development specification system to any repository — layered AGENTS.md, Agent Notes, Skills, and machine-checkable gates for Node, Python, and docs-only projects.",
   "type": "module",
   "bin": {
-    "agent-spec-init": "./dist/index.js"
+    "agent-spec-init": "./dist/bin.js"
   },
   "main": "./dist/index.js",
   "exports": {
@@ -16,9 +16,10 @@
   "scripts": {
     "build": "tsc && node scripts/copy-templates.mjs",
     "prepare": "npm run build",
-    "dev": "tsx src/index.ts",
+    "dev": "tsx src/bin.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json && tsc -p tsconfig.templates.json",
     "lint": "tsc --noEmit",
     "verify-agent-note-format": "tsx scripts/verify-agent-note-format.ts",
     "verify-agent-note-classification": "tsx scripts/verify-agent-note-classification.ts",
@@ -26,6 +27,7 @@
     "verify-md-wrap": "tsx scripts/verify-md-wrap.ts",
     "verify-doc-budgets": "tsx scripts/verify-doc-budgets.ts",
     "verify-export-jsdoc": "tsx scripts/verify-export-jsdoc.ts",
+    "verify-templates": "tsx scripts/verify-templates.ts",
     "verify-translation-pairing": "tsx scripts/verify-translation-pairing.ts --all",
     "doc-sync": "tsx scripts/run-gates.ts doc-sync",
     "test:docs": "tsx scripts/run-gates.ts doc-quick"
@@ -37,9 +39,15 @@
     "development",
     "adr",
     "scaffolding",
-    "cli"
+    "cli",
+    "agents-md",
+    "coding-agents"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CeejayChen/agent-spec-init.git"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -48,9 +56,9 @@
     "commander": "^13.1.0"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0",
-    "vitest": "^3.2.0",
-    "@types/node": "^22.0.0"
+    "vitest": "^3.2.0"
   }
 }
