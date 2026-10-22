@@ -6,7 +6,7 @@ How agent-spec-init tests, tier by tier, and the rules that keep a green suite m
 
 - **Unit** (`npm test`): rendering, detection, planning, and applying run against temporary directories and in-memory facts. They assert file content and outcomes, never console wording.
 - **Integration** (`npm test`, `tests/scaffold.spec.ts`): a real scaffold into a temporary directory, followed by the generated project's own gates run through `tsx` or Python.
-- **Negative controls** (`npm test`): a wrapped paragraph and a malformed Agent Note must turn the matching gate red. A gate that cannot fail has not been shown to work.
+- **Negative controls** (`npm test`): a wrapped paragraph, an undocumented export, and a malformed Agent Note must turn the matching gate red. A gate that cannot fail has not been shown to work.
 - **Template gate** (`npm run verify-templates`): every stack profile is rendered, checked for leftover placeholders, checked against its own budget manifest, and checked for unused templates.
 
 ## Prefer the real implementation over a mock

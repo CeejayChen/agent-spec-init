@@ -50,6 +50,7 @@ CLASSES = ("architecture", "process", "testing", "feature", "bug-fix", "simplifi
 ALLOWED_NOTE_ROOT_FILES = {"README.md", "AGENTS.md", "CLAUDE.md"}
 NOTE_NAME = re.compile(r"^\d{4}-\d{2}-\d{2}-.+\.md$")
 LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
+INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
 REQUIRED_SECTIONS = {
     "proposed": ("## Proposal", "## Alternatives considered", "## Acceptance criteria", "## Risks"),
@@ -198,7 +199,9 @@ def check_links() -> list[str]:
                 continue
             if in_fence:
                 continue
-            for match in LINK_RE.finditer(line):
+            # Link syntax inside an inline code span is documentation, not a link.
+            searchable = INLINE_CODE_RE.sub(lambda m: " " * len(m.group(0)), line)
+            for match in LINK_RE.finditer(searchable):
                 link = match.group(2)
                 if re.match(r"^[a-z]+:", link) or link.startswith("#"):
                     continue

@@ -83,7 +83,7 @@ function checkFile(filePath: string): void {
         !isExemptLine(prev) &&
         !prevTrimmed.startsWith("```")
       ) {
-        const rel = relative(ROOT, filePath);
+        const rel = relative(ROOT, filePath).replace(/\\/g, "/");
         errors.push(
           `${rel}:${i + 1}: wrapped paragraph (line continues from previous). Use one physical line per paragraph with editor soft-wrap.`
         );
@@ -96,11 +96,9 @@ function checkFile(filePath: string): void {
 const mdFiles = collectMarkdownFiles(ROOT);
 const filtered = mdFiles.filter(
   (f) =>
-    !f.includes("node_modules") &&
-    !f.includes("vendor") &&
-    !f.includes("dist") &&
+    !/[/\\](node_modules|vendor|dist)[/\\]/.test(f) &&
     !/[/\\]src[/\\]/.test(f) &&
-    !f.includes(".agents/notes/archived") // archived notes are frozen
+    !/[/\\]\.agents[/\\]notes[/\\]archived[/\\]/.test(f), // archived notes are frozen
 );
 
 for (const file of filtered) {

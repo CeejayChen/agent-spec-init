@@ -9,6 +9,7 @@ import { join, relative } from "node:path";
 
 /** The closed set of lifecycle folders. */
 export const LIFECYCLES = ["proposed", "implemented", "rejected"] as const;
+/** One lifecycle folder name. */
 export type Lifecycle = (typeof LIFECYCLES)[number];
 
 /** The closed set of classification folders. */
@@ -20,6 +21,7 @@ export const CLASSES = [
   "bug-fix",
   "simplification",
 ] as const;
+/** One classification folder name. */
 export type NoteClass = (typeof CLASSES)[number];
 
 /** Files allowed at the root of .agents/notes/ without being notes. */
@@ -29,6 +31,7 @@ const ALLOWED_ROOT_FILES = new Set(["README.md", "AGENTS.md", "CLAUDE.md"]);
 const FILENAME_RE = /^\d{4}-\d{2}-\d{2}-.+\.md$/;
 const ZH_SUFFIX = ".zh.md";
 
+/** One discovered Agent Note. */
 export interface NoteEntry {
   /** Absolute path to the English .md file */
   path: string;
@@ -44,6 +47,7 @@ export interface NoteEntry {
   date: string;
 }
 
+/** Notes found by the walk plus structural errors. */
 export interface WalkResult {
   notes: NoteEntry[];
   errors: string[];

@@ -55,9 +55,12 @@ function checkFile(filePath: string): void {
       continue;
     }
 
+    // Link syntax inside an inline code span is documentation, not a link.
+    const searchable = line.replace(/`[^`]*`/g, (span) => " ".repeat(span.length));
+
     let match: RegExpExecArray | null;
     LINK_RE.lastIndex = 0;
-    while ((match = LINK_RE.exec(line)) !== null) {
+    while ((match = LINK_RE.exec(searchable)) !== null) {
       const link = match[2];
 
       // Skip non-relative links
@@ -121,11 +124,7 @@ const mdFiles = collectMarkdownFiles(ROOT);
 
 // Exclude vendor, node_modules, dist, and src (contains non-doc source files)
 const filtered = mdFiles.filter(
-  (f) =>
-    !f.includes("node_modules") &&
-    !f.includes("vendor") &&
-    !f.includes("dist") &&
-    !/[/\\]src[/\\]/.test(f)
+  (f) => !/[/\\](node_modules|vendor|dist)[/\\]/.test(f) && !/[/\\]src[/\\]/.test(f),
 );
 
 for (const file of filtered) {
@@ -137,7 +136,7 @@ if (violations.length === 0) {
   process.exit(0);
 } else {
   for (const v of violations) {
-    const rel = relative(ROOT, v.file);
+    const rel = relative(ROOT, v.file).replace(/\\/g, "/");
     console.error(`  ❌ ${rel}:${v.line}  ${v.link}  — ${v.reason}`);
   }
   console.error(`\n❌ verify-md-links: ${violations.length} violation(s)`);

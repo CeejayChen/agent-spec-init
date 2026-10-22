@@ -64,7 +64,10 @@ function checkFile(filePath: string): void {
     for (let j = i - 1; j >= 0; j--) {
       const prevLine = lines[j].trim();
       if (prevLine === "") continue; // skip blank lines
-      if (prevLine.startsWith("*/")) {
+      if (prevLine.startsWith("/**") && prevLine.endsWith("*/")) {
+        // Single-line JSDoc: /** contract */
+        hasJsdoc = true;
+      } else if (prevLine.startsWith("*/")) {
         // Found end of block comment, check if it starts with /**
         for (let k = j - 1; k >= 0; k--) {
           if (lines[k].trim().startsWith("/**")) {
@@ -103,19 +106,22 @@ function checkFile(filePath: string): void {
 }
 
 // --- Main ---
-// Collect TypeScript source files, excluding tests and node_modules
+// Collect TypeScript source files, excluding tests and node_modules.
+// Paths are normalized so the segment filters work on every platform.
 const tsFiles = collectFiles(ROOT, [".ts"]);
-const srcFiles = tsFiles.filter(
-  (f) =>
-    f.includes(`/${SRC_PATTERN}/`) &&
-    !f.includes("node_modules") &&
-    !f.includes("dist") &&
-    !f.includes("vendor") &&
-    !f.includes("/tests/") &&
-    !f.includes(".spec.") &&
-    !f.includes(".test.") &&
-    !f.includes("types.ts") // types-only files are exempt
-);
+const srcFiles = tsFiles.filter((file) => {
+  const normalized = file.replace(/\\/g, "/");
+  return (
+    normalized.includes(`/${SRC_PATTERN}/`) &&
+    !normalized.includes("node_modules") &&
+    !normalized.includes("dist") &&
+    !normalized.includes("vendor") &&
+    !normalized.includes("/tests/") &&
+    !normalized.includes(".spec.") &&
+    !normalized.includes(".test.") &&
+    !normalized.includes("types.ts") // types-only files are exempt
+  );
+});
 
 for (const file of srcFiles) {
   checkFile(file);
@@ -126,7 +132,7 @@ if (violations.length === 0) {
   process.exit(0);
 } else {
   for (const v of violations) {
-    const rel = relative(ROOT, v.file);
+    const rel = relative(ROOT, v.file).replace(/\\/g, "/");
     console.error(`  ❌ ${rel}:${v.line}  ${v.kind} ${v.name} — missing JSDoc`);
   }
   console.error(`\n❌ verify-export-jsdoc: ${violations.length} violation(s)`);

@@ -9,6 +9,8 @@ import { join, relative, resolve } from "node:path";
 /**
  * Recursively collect files matching the given extensions.
  * Skips node_modules, dist, .git, and vendor directories.
+ * Returns forward-slash paths so callers can filter path segments the same way
+ * on every platform.
  */
 export function collectFiles(
   root: string,
@@ -41,7 +43,7 @@ export function collectFiles(
         }
       } else if (stat.isFile()) {
         if (extensions.some((ext) => entry.endsWith(ext))) {
-          results.push(fullPath);
+          results.push(fullPath.replace(/\\/g, "/"));
         }
       }
     }

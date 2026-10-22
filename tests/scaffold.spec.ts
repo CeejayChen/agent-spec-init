@@ -54,7 +54,11 @@ describe("node scaffold", () => {
         JSON.stringify({ name: "smoke-app", scripts: { test: "vitest run" }, type: "module" }),
       );
       writeFile(dir, "tsconfig.json", "{}");
-      writeFile(dir, "src/index.ts", "export const value = 1;\n");
+      writeFile(
+        dir,
+        "src/index.ts",
+        "/**\n * Sample value used by the scaffold's own gate check.\n */\nexport const value = 1;\n",
+      );
 
       const resolved = await resolveOptions({ directory: dir, yes: true }, dir);
       const report = scaffold(resolved!.options);
@@ -118,6 +122,44 @@ describe("node scaffold", () => {
     },
     30_000,
   );
+
+  it(
+    "the JSDoc gate audits exported declarations instead of passing vacuously",
+    () => {
+      const dir = tempDir();
+      dirs.push(dir);
+      writeFile(dir, "package.json", JSON.stringify({ name: "smoke-app" }));
+      scaffold(optionsFor(dir, "node"));
+      writeFile(
+        dir,
+        "src/index.ts",
+        "/** Documented value. */\nexport const documented = 1;\nexport function undocumented(): number {\n  return 2;\n}\n",
+      );
+
+      const result = runNodeGate(dir, "verify-export-jsdoc.ts");
+      expect(result.status).toBe(1);
+      expect(result.output).toContain("undocumented");
+      expect(result.output).toContain("src/index.ts");
+    },
+    30_000,
+  );
+  it(
+    "does not treat link syntax inside inline code as a link",
+    () => {
+      const dir = tempDir();
+      dirs.push(dir);
+      writeFile(dir, "package.json", JSON.stringify({ name: "smoke-app" }));
+      scaffold(optionsFor(dir, "node"));
+      writeFileSync(
+        join(dir, "docs/cookbook/README.md"),
+        `${readFileSync(join(dir, "docs/cookbook/README.md"), "utf-8")}Write \`[label](missing-file.md)\` to show the syntax.\n`,
+      );
+
+      const result = runNodeGate(dir, "verify-md-links.ts");
+      expect(result.status, result.output).toBe(0);
+    },
+    30_000,
+  );
 });
 
 describe("python scaffold", () => {
@@ -148,6 +190,13 @@ describe("python scaffold", () => {
 
       const passing = runPythonGates(dir, interpreter!, "doc-sync");
       expect(passing.status, passing.output).toBe(0);
+
+      writeFileSync(
+        join(dir, "docs/cookbook/README.md"),
+        `${readFileSync(join(dir, "docs/cookbook/README.md"), "utf-8")}Write \`[label](missing.md)\` to show the syntax.\n`,
+      );
+      const links = runPythonGates(dir, interpreter!, "verify-md-links");
+      expect(links.status, links.output).toBe(0);
 
       writeFileSync(
         join(dir, "docs/testing.md"),
